@@ -1,121 +1,59 @@
-# Job Board App (Bacheca Annunci di Lavoro - Front-end Flutter)
+# Bacheca Annunci di Lavoro - Front-end Flutter
 
-Applicazione mobile sviluppata in **Flutter** per il corso di **Enterprise Mobile Application Development**.
-L'app permette alle aziende di registrarsi, accedere alla propria area riservata e pubblicare offerte di lavoro, e ai candidati (senza autenticazione) di consultare la bacheca e candidarsi allegando il proprio Curriculum Vitae in formato PDF.
+Applicazione mobile sviluppata in Flutter per il corso di Enterprise Mobile Application Development (A.A. 2025/2026).
+Sviluppato da Alfio Marra ([@alphi0m](https://github.com/alphi0m)).
 
----
+## Descrizione del progetto
+L'applicazione implementa il client mobile per la gestione della bacheca annunci di lavoro, interfacciandosi con il backend REST locale.
 
-## 📱 Requisiti e Funzionalità
-- **R1 – Registrazione Azienda**: Creazione di un profilo aziendale con nome, email e password.
-- **R2 – Login Azienda**: Accesso con credenziali e memorizzazione sicura del token di sessione.
-- **R3 – Logout Azienda**: Disconnessione e blocco dell'accesso all'area riservata.
-- **R4 – Pubblicazione Annuncio**: Form per creare un'offerta di lavoro con titolo, sede e descrizione.
-- **R5 – Consultazione Bacheca (Candidato)**: Elenco offerte disponibili con ricerca/filtri in tempo reale e schermata di dettaglio offerta.
-- **R6 – Candidatura (Candidato)**: Invio candidatura compilando generalità e allegando il file PDF del curriculum tramite file picker nativo.
-- **R7 – Consultazione Candidature (Azienda)**: Elenco candidature ricevute per ciascun annuncio con apertura diretta del PDF del CV allegato.
+L'app copre i tre scenari d'uso richiesti dalle specifiche della task:
+1. **Scenario 1 (Pubblicazione annuncio)**: registrazione di una nuova azienda, login, accesso all'area riservata e creazione/pubblicazione di una nuova offerta di lavoro.
+2. **Scenario 2 (Candidatura)**: consultazione della bacheca pubblica da parte del candidato non autenticato, selezione di un annuncio, compilazione dei dati anagrafici e caricamento del CV in formato PDF tramite file picker nativo.
+3. **Scenario 3 (Consultazione candidature e logout)**: accesso dell'azienda alla lista dei propri annunci, selezione delle candidature pervenute, apertura del file PDF del curriculum tramite il visualizzatore nativo del dispositivo e successivo logout con blocco dell'area riservata.
 
----
+## Tecnologie e librerie utilizzate
+- **Flutter SDK** (Material 3 con supporto dinamico Light/Dark Theme)
+- **provider**: per la gestione dello stato dell'applicazione e della sessione
+- **http**: per le comunicazioni REST e l'upload multipart dei file
+- **file_picker**: per la selezione del file PDF del curriculum dalla memoria del dispositivo
+- **open_filex** e **url_launcher**: per l'apertura e visualizzazione dei PDF
+- **shared_preferences**: per la persistenza del token di sessione, del tema e dell'indirizzo del server
 
-## 🎬 Scenari di Consegna (Dimostrabili per i Video S1-S3)
-
-### Scenario 1 (S1) – Pubblicare un annuncio
-1. All'avvio dell'app, toccare **Area Aziende** e selezionare **Registrati ora**.
-2. Inserire i dati dell'azienda (es. *TechCorp*, email e password) e confermare la creazione dell'account.
-3. Effettuare il login con email e password: l'app autentica l'azienda e mostra l'**Area Riservata Azienda**.
-4. Toccare il pulsante **Nuovo Annuncio**, compilare titolo e descrizione, quindi confermare la pubblicazione.
-5. L'annuncio viene pubblicato e compare immediatamente nella bacheca visibile a tutti.
-
-### Scenario 2 (S2) – Candidarsi a un annuncio
-1. Aprire l'app senza effettuare alcun login (visuale pubblica per i candidati).
-2. L'app mostra l'elenco degli annunci pubblicati.
-3. Selezionare l'annuncio desiderato per visualizzarne il dettaglio.
-4. Toccare **Candidati a questo annuncio**, compilare nome, cognome ed email.
-5. Toccare **Seleziona File PDF** e scegliere il curriculum dal telefono.
-6. Premere **Conferma e Invia Candidatura**: l'app invia i dati e il file al server locale e mostra il messaggio di conferma.
-
-### Scenario 3 (S3) – Consultare le candidature e uscire
-1. Effettuare il login con l'account aziendale che ha ricevuto candidature.
-2. Nella dashboard, aprire l'elenco degli annunci e selezionare quello con candidature.
-3. Selezionare il candidato dall'elenco per visualizzarne i dettagli anagrafici.
-4. Premere **Apri Curriculum Vitae (PDF)**: il file PDF del candidato viene scaricato dal server e visualizzato nel lettore PDF nativo dello smartphone.
-5. Tornare alla dashboard e toccare l'icona di **Logout** in alto a destra.
-6. L'app torna alla schermata pubblica e l'area riservata non è più accessibile.
-
----
-
-## ⚙️ Configurazione Connessione Smartphone ↔ Server Locale
-Durante la demo o la registrazione video con il tuo smartphone fisico:
-1. Assicurati che lo smartphone e il computer dove gira il backend siano connessi alla **stessa rete Wi-Fi**.
-2. Trova l'indirizzo IP locale del tuo computer (su Mac: `ipconfig getifaddr en0` oppure Preferenze di Sistema -> Rete).
-3. Nell'app Flutter, tocca l'icona **Impostazioni di Rete** (in alto a destra nella bacheca) e imposta l'URL del server (es. `http://192.168.1.50:8000`).
-4. L'app memorizza l'URL in cache (`SharedPreferences`), pronto per tutte le chiamate.
-
----
-
-## 🚀 Avvio dell'Applicazione
+## Configurazione e avvio
 
 ### Prerequisiti
-- Flutter SDK 3.x
-- Dispositivo Android/iOS collegato (o emulatore/simulatore)
+- Flutter SDK 3.x installato e configurato
+- Un emulatore, browser Chrome o uno smartphone connesso in debug (Android / iOS)
 
 ### Comandi
+1. Clonare il repository:
 ```bash
-# 0. Clonare il repository
 git clone https://github.com/alphi0m/job_board_frontend.git
 cd job_board_frontend
-
-# 1. Scaricare le dipendenze
-flutter pub get
-
-# 2. Verificare l'assenza di errori
-flutter analyze
-
-# 3. Eseguire i test automatici sui modelli
-flutter test
-
-# 4. Avviare l'app sul dispositivo
-flutter run
 ```
 
----
+2. Scaricare le dipendenze:
+```bash
+flutter pub get
+```
 
-## 📦 Struttura del Progetto
-```text
-job_board_frontend/
-├── lib/
-│   ├── config/
-│   │   └── api_config.dart          # Gestione dinamica dell'URL del server
-│   ├── models/
-│   │   ├── company.dart             # Modello dati Azienda
-│   │   ├── job.dart                 # Modello dati Offerta di Lavoro
-│   │   └── application.dart         # Modello dati Candidatura
-│   ├── services/
-│   │   ├── api_service.dart         # Client HTTP con Multipart e Token Injection
-│   │   ├── auth_service.dart        # Servizio Login/Registrazione e SharedPreferences
-│   │   ├── jobs_service.dart        # Servizio Annunci pubblici e aziendali
-│   │   └── applications_service.dart# Servizio Invio e Apertura PDF
-│   ├── providers/
-│   │   ├── auth_provider.dart       # Gestione stato autenticazione aziendale
-│   │   └── jobs_provider.dart       # Gestione stato annunci e candidature
-│   ├── screens/
-│   │   ├── public/
-│   │   │   ├── jobs_board_screen.dart # Bacheca pubblica (Home - R5)
-│   │   │   ├── job_detail_screen.dart # Dettaglio annuncio (R5)
-│   │   │   └── apply_job_screen.dart  # Form candidatura con file picker (R6)
-│   │   ├── auth/
-│   │   │   ├── login_screen.dart      # Login azienda (R2)
-│   │   │   └── register_screen.dart   # Registrazione azienda (R1)
-│   │   └── company/
-│   │       ├── company_dashboard_screen.dart # Area riservata "I miei annunci" (R4, R7, R3)
-│   │       ├── create_job_screen.dart        # Form pubblicazione offerta (R4)
-│   │       └── job_applications_screen.dart  # Consultazione candidature e apertura CV (R7)
-│   ├── widgets/
-│   │   └── server_config_dialog.dart# Dialog per configurare l'IP del backend
-│   └── main.dart                    # Inizializzazione app e Provider
-├── test/
-│   └── widget_test.dart             # Test unitari sui modelli
-├── android/                         # Configurazione Android (Cleartext HTTP abilitato)
-├── ios/                             # Configurazione iOS (NSAllowsArbitraryLoads)
-├── pubspec.yaml
-└── README.md
+3. Eseguire l'applicazione:
+```bash
+# Per avviare su smartphone o emulatore:
+flutter run
+
+# Per avviare su Chrome:
+flutter run -d chrome
+```
+
+## Connessione con il backend locale
+Per permettere all'app su smartphone fisico di raggiungere il server in esecuzione sul computer:
+- Assicurarsi che computer e smartphone siano connessi alla stessa rete Wi-Fi.
+- All'interno dell'app è presente un pulsante delle impostazioni di rete nella barra superiore della bacheca pubblica, che consente di impostare l'indirizzo IP del computer (ad esempio `http://192.168.1.X:8000`). L'impostazione viene memorizzata in cache locale.
+- Per l'emulatore Android l'indirizzo predefinito è `http://10.0.2.2:8000`, mentre per iOS Simulator o Chrome è `http://localhost:8000`.
+
+## Test
+Per eseguire i test unitari sui modelli:
+```bash
+flutter test
 ```

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/jobs_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../widgets/server_config_dialog.dart';
 import '../auth/login_screen.dart';
 import '../company/company_dashboard_screen.dart';
@@ -35,8 +36,11 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final auth = context.watch<AuthProvider>();
     final jobsProv = context.watch<JobsProvider>();
+    final themeProv = context.watch<ThemeProvider>();
 
     final filteredJobs = jobsProv.publicJobs.where((job) {
       final q = _searchQuery.toLowerCase();
@@ -48,15 +52,27 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bacheca Annunci'),
+        title: const Text(
+          'Bacheca Annunci',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
+          // Switcher Tema Light/Dark
           IconButton(
-            tooltip: 'Configura Server',
+            tooltip: 'Cambia Tema',
+            icon: Icon(
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            ),
+            onPressed: () => themeProv.toggleTheme(context),
+          ),
+          // Configurazione IP Server
+          IconButton(
+            tooltip: 'Impostazioni Rete',
             icon: const Icon(Icons.settings_ethernet),
             onPressed: () => ServerConfigDialog.show(context),
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 12.0, left: 4.0),
             child: auth.isAuthenticated
                 ? FilledButton.tonalIcon(
                     onPressed: () {
@@ -69,7 +85,7 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
                     icon: const Icon(Icons.business_center, size: 18),
                     label: Text(auth.currentCompany?.name ?? 'Area Azienda'),
                   )
-                : OutlinedButton.icon(
+                : FilledButton.icon(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -85,36 +101,44 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
       ),
       body: Column(
         children: [
-          // Banner informativo Candidato
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline,
-                    size: 20, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    'Trova il tuo lavoro ideale. Candidati liberamente senza registrazione!',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
-                  ),
+          // Banner Informativo Candidato
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
                 ),
-              ],
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: theme.colorScheme.primary),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'Trova la tua opportunità lavorativa. Candidati liberamente senza registrazione!',
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
-          // Campo di Ricerca
+          // Campo di Ricerca Moderno
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Cerca per titolo, azienda o città...',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Cerca annunci per posizione, azienda o città...',
+                prefixIcon: const Icon(Icons.search, size: 20),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.close, size: 18),
                         onPressed: () {
                           setState(() {
                             _searchController.clear();
@@ -123,10 +147,7 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
                         },
                       )
                     : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onChanged: (val) {
                 setState(() {
@@ -136,7 +157,7 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
             ),
           ),
 
-          // Lista Annunci Pubblici (R5)
+          // Elenco Annunci Pubblici (R5)
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => jobsProv.fetchPublicJobs(),
@@ -149,13 +170,12 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.cloud_off,
-                                    size: 56, color: Colors.grey),
+                                const Icon(Icons.cloud_off_rounded, size: 54, color: Colors.grey),
                                 const SizedBox(height: 12),
                                 Text(
                                   jobsProv.errorMessage!,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.red),
+                                  style: TextStyle(color: theme.colorScheme.error),
                                 ),
                                 const SizedBox(height: 16),
                                 FilledButton(
@@ -171,120 +191,134 @@ class _JobsBoardScreenState extends State<JobsBoardScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.work_outline,
-                                      size: 56, color: Colors.grey),
+                                  Icon(Icons.work_outline, size: 56, color: Colors.grey.shade400),
                                   const SizedBox(height: 12),
                                   Text(
                                     _searchQuery.isEmpty
-                                        ? 'Nessun annuncio pubblicato al momento.'
-                                        : 'Nessun annuncio corrisponde alla ricerca.',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.grey),
+                                        ? 'Nessun annuncio presente al momento.'
+                                        : 'Nessun risultato corrispondente.',
+                                    style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
                                   ),
                                 ],
                               ),
                             )
                           : ListView.builder(
                               itemCount: filteredJobs.length,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               itemBuilder: (ctx, index) {
                                 final job = filteredJobs[index];
-                                final formattedDate =
-                                    DateFormat('dd/MM/yyyy')
-                                        .format(job.createdAt);
+                                final formattedDate = DateFormat('dd/MM/yyyy').format(job.createdAt);
 
                                 return Card(
-                                  elevation: 1,
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 6),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                  margin: const EdgeInsets.symmetric(vertical: 6),
                                   child: InkWell(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(16),
                                     onTap: () {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              JobDetailScreen(job: job),
+                                          builder: (_) => JobDetailScreen(job: job),
                                         ),
                                       );
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
+                                              // Avatar Iniziale Azienda
+                                              Container(
+                                                width: 44,
+                                                height: 44,
+                                                decoration: BoxDecoration(
+                                                  color: theme.colorScheme.primaryContainer,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                alignment: Alignment.center,
                                                 child: Text(
-                                                  job.title,
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
+                                                  (job.companyName.isNotEmpty ? job.companyName[0] : 'A').toUpperCase(),
+                                                  style: TextStyle(
                                                     fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: theme.colorScheme.primary,
                                                   ),
                                                 ),
                                               ),
-                                              const Icon(
-                                                  Icons.chevron_right,
-                                                  color: Colors.grey),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              const Icon(
-                                                  Icons.business,
-                                                  size: 16,
-                                                  color: Colors.blueGrey),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                job.companyName,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.blueGrey,
-                                                ),
-                                              ),
                                               const SizedBox(width: 12),
-                                              const Icon(
-                                                  Icons.location_on_outlined,
-                                                  size: 16,
-                                                  color: Colors.blueGrey),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                job.location,
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.blueGrey,
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      job.title,
+                                                      style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 2),
+                                                    Text(
+                                                      job.companyName,
+                                                      style: TextStyle(
+                                                        fontSize: 13.5,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: theme.colorScheme.onSurfaceVariant,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
+                                              Icon(Icons.chevron_right, size: 20, color: Colors.grey.shade400),
                                             ],
                                           ),
-                                          const SizedBox(height: 10),
+                                          const SizedBox(height: 12),
                                           Text(
                                             job.description,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.black87),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Text(
-                                              'Pubblicato il $formattedDate',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[600],
-                                              ),
+                                            style: TextStyle(
+                                              fontSize: 13.5,
+                                              height: 1.4,
+                                              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                             ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          // Badge info
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.4),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.location_on_outlined, size: 13, color: theme.colorScheme.secondary),
+                                                    const SizedBox(width: 3),
+                                                    Text(
+                                                      job.location,
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: theme.colorScheme.onSecondaryContainer,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                formattedDate,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: theme.colorScheme.outline,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),

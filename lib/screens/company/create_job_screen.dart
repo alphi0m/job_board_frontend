@@ -55,114 +55,116 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final jobsProv = context.watch<JobsProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crea Nuovo Annuncio'),
+        title: const Text('Nuova Offerta'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Dettagli Offerta di Lavoro (R4)',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Compila i campi sottostanti per pubblicare la posizione lavorativa aperta sulla bacheca pubblica.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Crea Nuovo Annuncio di Lavoro',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Compila i campi per pubblicare la posizione lavorativa aperta sulla bacheca pubblica.',
+                        style: TextStyle(fontSize: 13.5, color: theme.colorScheme.outline),
+                      ),
+                      const SizedBox(height: 24),
 
-              // Titolo Annuncio
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Titolo Posizione *',
-                  hintText: 'es. Flutter Mobile Developer Junior',
-                  prefixIcon: Icon(Icons.title),
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Il titolo dell\'annuncio è obbligatorio';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                      // Titolo Annuncio
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Titolo Posizione *',
+                          hintText: 'es. Flutter Mobile Developer',
+                          prefixIcon: Icon(Icons.badge_outlined, size: 20),
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Il titolo dell\'annuncio è obbligatorio';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
 
-              // Sede / Modalità
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Sede / Modalità di lavoro',
-                  hintText: 'es. Remoto, Salerno, Milano (Ibrido)',
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 16),
+                      // Sede / Modalità
+                      TextFormField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(
+                          labelText: 'Sede / Modalità',
+                          hintText: 'es. Remoto, Salerno, Milano (Ibrido)',
+                          prefixIcon: Icon(Icons.location_on_outlined, size: 20),
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                      ),
+                      const SizedBox(height: 16),
 
-              // Descrizione
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Descrizione Completa dell\'Offerta *',
-                  hintText:
-                      'Descrivi mansioni, requisiti richiesti, benefit e informazioni utili per i candidati...',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'La descrizione dell\'annuncio è obbligatoria';
-                  }
-                  if (val.trim().length < 10) {
-                    return 'La descrizione deve essere più dettagliata (almeno 10 caratteri)';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 32),
+                      // Descrizione
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 7,
+                        decoration: const InputDecoration(
+                          labelText: 'Descrizione del Ruolo e Requisiti *',
+                          hintText:
+                              'Descrivi attività principali, competenze richieste, benefit e dettagli contrattuali...',
+                          alignLabelWithHint: true,
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'La descrizione è obbligatoria';
+                          }
+                          if (val.trim().length < 10) {
+                            return 'Inserisci una descrizione di almeno 10 caratteri';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 28),
 
-              // Bottone di Pubblicazione (R4)
-              FilledButton.icon(
-                onPressed: jobsProv.isActionLoading ? null : _handleSubmit,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                      // Bottone di Pubblicazione (R4)
+                      FilledButton.icon(
+                        onPressed: jobsProv.isActionLoading ? null : _handleSubmit,
+                        icon: jobsProv.isActionLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.check_circle_outline, size: 18),
+                        label: Text(
+                          jobsProv.isActionLoading
+                              ? 'Pubblicazione in corso...'
+                              : 'Pubblica Annuncio sulla Bacheca',
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                icon: jobsProv.isActionLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.check_circle_outline),
-                label: Text(
-                  jobsProv.isActionLoading
-                      ? 'Pubblicazione in corso...'
-                      : 'Pubblica Annuncio sulla Bacheca',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
               ),
-            ],
+            ),
           ),
         ),
       ),

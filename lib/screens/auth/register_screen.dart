@@ -56,139 +56,149 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrazione Azienda'),
+        title: const Text('Registrazione'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Icon(
-                Icons.business_outlined,
-                size: 64,
-                color: Colors.blueAccent,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Crea il tuo profilo Aziendale',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Registra la tua azienda per iniziare a pubblicare offerte di lavoro e ricevere candidature.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 32),
-
-              // Ragione Sociale / Nome Azienda
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome Azienda / Ragione Sociale *',
-                  prefixIcon: Icon(Icons.apartment),
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.words,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Inserisci la denominazione dell\'azienda';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Email Aziendale
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email Aziendale *',
-                  prefixIcon: Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Inserisci l\'email aziendale';
-                  }
-                  if (!val.contains('@') || !val.contains('.')) {
-                    return 'Inserisci un\'email valida';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Password
-              TextFormField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Password *',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (val) {
-                  if (val == null || val.isEmpty) {
-                    return 'Inserisci una password';
-                  }
-                  if (val.length < 6) {
-                    return 'La password deve avere almeno 6 caratteri';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 28),
-
-              // Pulsante Registrati (R1)
-              FilledButton(
-                onPressed: auth.isLoading ? null : _handleRegister,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: auth.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(28.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      )
-                    : const Text(
-                        'Registra Account Azienda',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.apartment_rounded,
+                          size: 32,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
-              ),
-              const SizedBox(height: 16),
+                      const SizedBox(height: 18),
+                      const Text(
+                        'Crea Profilo Aziendale',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Registra la tua azienda per iniziare a pubblicare offerte di lavoro e ricevere candidature.',
+                        style: TextStyle(fontSize: 13.5, color: theme.colorScheme.outline),
+                      ),
+                      const SizedBox(height: 28),
 
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Hai già un account? Accedi al Login'),
+                      // Nome Azienda
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nome Azienda / Ragione Sociale',
+                          prefixIcon: Icon(Icons.business_outlined, size: 20),
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Inserisci la denominazione aziendale';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Email Aziendale
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email Aziendale',
+                          prefixIcon: Icon(Icons.email_outlined, size: 20),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Inserisci l\'email aziendale';
+                          }
+                          if (!val.contains('@') || !val.contains('.')) {
+                            return 'Inserisci un\'email valida';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Password
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined, size: 20),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Inserisci la password';
+                          }
+                          if (val.length < 6) {
+                            return 'La password deve contenere almeno 6 caratteri';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Pulsante Registrati (R1)
+                      FilledButton(
+                        onPressed: auth.isLoading ? null : _handleRegister,
+                        child: auth.isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Registra Account Aziendale',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Hai già un account? Accedi al login'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ),
