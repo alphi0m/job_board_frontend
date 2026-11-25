@@ -60,6 +60,10 @@ Durante la demo o la registrazione video con il tuo smartphone fisico:
 
 ### Comandi
 ```bash
+# 0. Clonare il repository
+git clone https://github.com/alphi0m/job_board_frontend.git
+cd job_board_frontend
+
 # 1. Scaricare le dipendenze
 flutter pub get
 
