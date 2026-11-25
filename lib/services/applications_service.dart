@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/application.dart';
 import 'api_service.dart';
 
@@ -14,7 +16,7 @@ class ApplicationsService {
     required String firstName,
     required String lastName,
     required String email,
-    required String filePath,
+    required List<int> fileBytes,
     required String originalFilename,
   }) async {
     final res = await apiService.postMultipart(
@@ -25,7 +27,7 @@ class ApplicationsService {
         'email': email,
       },
       fileFieldName: 'cv',
-      filePath: filePath,
+      fileBytes: fileBytes,
       originalFilename: originalFilename,
     );
     return res as Map<String, dynamic>;
@@ -40,19 +42,22 @@ class ApplicationsService {
         .toList();
   }
 
-  Future<OpenResult> downloadAndOpenCv(CandidateApplication application) async {
-    // 1. Scarica i byte del file PDF dal server
-    final bytes = await apiService.downloadBytes(application.cvUrl);
+  Future<bool> downloadAndOpenCv(CandidateApplication application) async {
+    if (kIsWeb) {
+      // Su Web/Chrome: apre il PDF in una nuova scheda
+      final uri = Uri.parse(application.cvUrl);
+      return await launchUrl(uri, mode: LaunchMode.platformDefault);
+    } else {
+      // Su Mobile (Android/iOS) e Desktop: scarica in locale e apre con il viewer nativo
+      final bytes = await apiService.downloadBytes(application.cvUrl);
+      final tempDir = await getTemporaryDirectory();
+      final localPath =
+          '${tempDir.path}/${application.id}_${application.cvOriginalName}';
+      final file = File(localPath);
+      await file.writeAsBytes(bytes, flush: true);
 
-    // 2. Salva temporaneamente il file sul dispositivo
-    final tempDir = await getTemporaryDirectory();
-    final localPath =
-        '${tempDir.path}/${application.id}_${application.cvOriginalName}';
-    final file = File(localPath);
-    await file.writeAsBytes(bytes, flush: true);
-
-    // 3. Apre il PDF con il visualizzatore nativo del sistema operativo dello smartphone
-    final result = await OpenFilex.open(localPath);
-    return result;
+      final result = await OpenFilex.open(localPath);
+      return result.type.name == 'done';
+    }
   }
 }

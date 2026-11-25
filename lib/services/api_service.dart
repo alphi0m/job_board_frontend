@@ -92,7 +92,7 @@ class ApiService {
     required String endpoint,
     required Map<String, String> fields,
     required String fileFieldName,
-    required String filePath,
+    required List<int> fileBytes,
     required String originalFilename,
   }) async {
     final url = Uri.parse('${apiConfig.baseUrl}$endpoint');
@@ -101,9 +101,9 @@ class ApiService {
       request.headers.addAll(_buildHeaders(isJson: false));
       request.fields.addAll(fields);
 
-      final multipartFile = await http.MultipartFile.fromPath(
+      final multipartFile = http.MultipartFile.fromBytes(
         fileFieldName,
-        filePath,
+        fileBytes,
         filename: originalFilename,
       );
       request.files.add(multipartFile);

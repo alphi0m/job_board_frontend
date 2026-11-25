@@ -108,7 +108,7 @@ class JobsProvider extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String email,
-    required String filePath,
+    required List<int> fileBytes,
     required String originalFilename,
   }) async {
     _isActionLoading = true;
@@ -121,7 +121,7 @@ class JobsProvider extends ChangeNotifier {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        filePath: filePath,
+        fileBytes: fileBytes,
         originalFilename: originalFilename,
       );
       _isActionLoading = false;
@@ -137,8 +137,7 @@ class JobsProvider extends ChangeNotifier {
 
   Future<bool> openCandidateCv(CandidateApplication app) async {
     try {
-      final res = await applicationsService.downloadAndOpenCv(app);
-      return res.type.name == 'done';
+      return await applicationsService.downloadAndOpenCv(app);
     } catch (e) {
       _errorMessage = 'Impossibile aprire il CV: $e';
       notifyListeners();

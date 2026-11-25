@@ -59,7 +59,7 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
   Future<void> _submitApplication() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_pickedFile == null || _pickedFile!.path == null) {
+    if (_pickedFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Attenzione: Devi allegare il tuo Curriculum (PDF).'),
@@ -69,13 +69,16 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
       return;
     }
 
+    final fileBytes = await _pickedFile!.xFile.readAsBytes();
+    if (!mounted) return;
+
     final jobsProv = context.read<JobsProvider>();
     final success = await jobsProv.applyToJob(
       jobId: widget.job.id,
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
-      filePath: _pickedFile!.path!,
+      fileBytes: fileBytes,
       originalFilename: _pickedFile!.name,
     );
 
